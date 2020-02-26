@@ -1,3 +1,5 @@
-# s-des
+# S-DES
+### _Matt Manzi_
+### _Project 2 of CMSC 487, Spring 2020._
 
-A description of this package.
+An implementation of the Simplified Data Encryption Standard (S-DES) and Double S-DES Data Encryption Algorithm (DS-DEA).
