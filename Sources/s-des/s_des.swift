@@ -1,6 +1,7 @@
 //
 //  s_des.swift
-//  Houses all the core functionality of the Simplified Data Encryption Standard (S-DES).
+//  Houses all the core functionality of the Simplified Data Encryption Standard
+//  (S-DES).
 //
 //  Created by Matt Manzi on 2/25/20.
 //  Project 2 of CMSC 487, Spring 2020.
@@ -8,31 +9,31 @@
 
 import Foundation
 
-// total number of rounds for ciphering
+/// The total number of rounds for ciphering.
 let ROUNDS = 4
 
-// initial and inverse initial permuation vectors, respectively
+/// The initial and inverse initial permuation vectors, respectively.
 let IP: [[UInt8]] = [
     [2, 6, 3, 1, 4, 8, 5, 7],
     [4, 1, 3, 5, 7, 2, 8, 6]
 ]
 
-// mask to zero out non-key bits
+/// The mask to zero out non-key bits.
 let KEY_MASK: UInt16 = 0b0000001111111111
 
-// permuted choice vectors PC_1 and PC_2 for key schedule, respectively
+/// The permuted choice vectors PC1 and PC2 for key schedule, respectively.
 let PC: [[UInt16]] = [
     [3, 5, 2, 7, 4, 10, 1, 9, 8, 6],
     [6, 3, 7, 4, 8, 5, 10, 9]
 ]
 
-// number of left shifts (rotations) to perform for the respective round of the key schedule
+/// The number of left shifts (rotations) to perform for the respective round of the key schedule.
 let ROTATIONS = [1, 2, 2, 2]
 
-// selections of the R-bits in f
+/// The selections of the R-bits in f.
 let E: [UInt8] = [4, 1, 2, 3, 2, 3, 4, 1]
 
-// substitution boxes S_1 and S_2, respectively
+/// The substitution boxes S1 and S2, respectively.
 let S: [[[UInt8]]] = [
     [
         [1, 0, 3, 2],
@@ -48,7 +49,7 @@ let S: [[[UInt8]]] = [
     ]
 ]
 
-// permutation vector P for f
+/// The permutation vector P for f.
 let P: [UInt8] = [2, 4, 3, 1]
 
 /**
@@ -181,7 +182,7 @@ func scheduleKeys(from key: UInt16) -> [UInt8] {
  */
 func f(_ r: UInt8, _ key: UInt8) -> UInt8 {
     
-    // expand the R bits using the E vector and XOR with key, first masking out the upper 4 bits
+    // expand R bits using E vector, XOR w/ key, after masking out upper 4 bits
     let expanded = permute(r & 0x0F, by: E) ^ key
     
     // split into two halves (b1 is least significant nibble)
