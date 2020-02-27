@@ -1,7 +1,7 @@
 import XCTest
 
-import s_desTests
+import SDESTests
 
 var tests = [XCTestCaseEntry]()
-tests += s_desTests.allTests()
+tests += SDESTests.allTests()
 XCTMain(tests)
