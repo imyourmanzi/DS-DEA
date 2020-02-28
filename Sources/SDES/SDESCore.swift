@@ -9,6 +9,9 @@
 
 import Foundation
 
+
+// MARK: - Constants
+
 /// The total number of rounds for ciphering.
 let ROUNDS = 4
 
@@ -52,7 +55,38 @@ let S: [[[UInt8]]] = [
 /// The permutation vector P for f.
 let P: [UInt8] = [2, 4, 3, 1]
 
+
+// MARK: - SDES Core Functionality
+
 public class SDESCore {
+    
+    /**
+     TODO: comment
+     */
+    func encrypt(_ block: UInt8, with key: UInt16) -> UInt8 {
+        
+        // generate schedule of keys
+        let keySchedule = scheduleKeys(from: key)
+        
+        // encipher the block
+        let ciphertext = cipher(block, using: keySchedule)
+        
+        return ciphertext
+    }
+    
+    /**
+     TODO: comment
+     */
+    func decrypt(_ block: UInt8, with key: UInt16) -> UInt8 {
+        
+        // generate schedule of keys
+        let reversedKeySchedule: [UInt8] = scheduleKeys(from: key).reversed()
+        
+        // decipher the block
+        let plaintext = cipher(block, using: reversedKeySchedule)
+        
+        return plaintext
+    }
     
     /**
      Enciphers an 8-bit block using a key schedule array of keys.  Note that this function also deciphers enciphered blocks when given the ciphertext and the same, but reversed, key schedule array.
@@ -240,11 +274,11 @@ extension UInt16 {
      - Returns: The original number after its rotation.
      */
     public func rotatedLeft(by shift: Int,
-                            forBitsUpTo maxPlace: Int = self.bitWidth) -> UInt16 {
+                            forBitsUpTo maxPlace: Int = 16) -> UInt16 {
         
         // simple rotates using the whole 2 bytes
         if maxPlace >= self.bitWidth {
-            return (self << shift) | (self >> (maxPlace - shift))
+            return (self << shift) | (self >> (self.bitWidth - shift))
         }
         
         // when rotating a subset of bits

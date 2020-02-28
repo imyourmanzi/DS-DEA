@@ -7,20 +7,20 @@
 
 import XCTest
 import class Foundation.Bundle
-//@testable import SDES
+//@testable import class SDES.SDESCore
 
 final class SDESTests: XCTestCase {
     
     static var allTests = [
-//        ("testRotatedLeft", testRotatedLeft),
+        ("testRotatedLeft", testRotatedLeft),
         ("testSubstitute", testSubstitute)
     ]
     
-    private var sdes: SDESCore!
+//    private var sdes: SDESCore!
     
     override func setUp() {
         super.setUp()
-        sdes = SDESCore()
+//        sdes = SDESCore()
     }
     
     func testRotatedLeft() throws {
