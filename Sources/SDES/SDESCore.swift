@@ -107,15 +107,16 @@ public class SDESCore {
          split block into L and R, like:
          MSb                   LSb
          +-----------+-----------+
-         |     r     |     l     |
+         |     l     |     r     |
          +-----------+-----------+
          */
-        var l: UInt8 = (permuted & 0x0F)
-        var r: UInt8 = (permuted & 0xF0) >> 4
+        var r: UInt8 = (permuted & 0x0F)
+        var l: UInt8 = (permuted & 0xF0) >> 4
         
         // perform cipherment rounds
+        var temp: UInt8 = 0
         for i in 0..<ROUNDS {
-            let temp = l ^ f(r, keys[i])
+            temp = l ^ f(r, keys[i])
             l = r
             r = temp
         }
@@ -124,10 +125,10 @@ public class SDESCore {
          combine L and R into single block, like:
          MSb                   LSb
          +-----------+-----------+
-         |     l     |     r     |
+         |     r     |     l     |
          +-----------+-----------+
          */
-        let preoutput: UInt8 = (l << 4) | r
+        let preoutput: UInt8 = (r << 4) | l
         
         // inverse initial permutation
         let output = permute(preoutput, by: IP[1])
@@ -141,26 +142,32 @@ public class SDESCore {
      - Parameter bits: The bits to be permuted.
      - Parameter vector: The permutation vector that describes how to permute the bits.
      
-     - Precondition: `vector` must not contain more elements than `bits.bitWidth`.  It describes the ordering of each bit where the first element indicates which bit will be placed in the position of least significant bit (LSb), the second bit number is the bit number to be moved into the second-LSb position, and so on.  Bits are numbered `1...bits.bitWidth`.
+     - Precondition: `vector` must not contain more elements than `bits.bitWidth`.  It describes the ordering of each bit where the first element indicates which bit will be placed in the position of most significant bit (MSb), the second bit number is the bit number to be moved into the second-MSb position, and so on.  Bits are numbered `1...bits.bitWidth`.
      
      - Returns: The bits of `bits` in the permuted order.
+     
+     - Postcondition: The effective bit width of the return value will be equivalent to `vector.count`.
      */
-    func permute<T: UnsignedInteger>(_ bits: T, by vector: [T]) -> T {
+    func permute<T>(_ bits: T, by vector: [T]) -> T where T: UnsignedInteger {
+        
+        // shift the bits so that 1 is in the MSb position of T
+        let workingBits = bits << (bits.bitWidth - vector.count)
         
         // isolate each bit and move it to it's permutated position
         var permuted: T = 0
         for (i, bit) in vector.enumerated() {
             
             // find the bit to mask and the amount to shift
-            let mask: T = 1 << (bit - 1)
-            let shift = (i + 1) - Int(bit)
+            let mask: T = 1 << (workingBits.bitWidth - Int(bit))
+            let shift = Int(bit) - (i + 1)
             
             // add it to the rest of the bits
-            permuted |= (bits & mask) << shift
+            permuted |= (workingBits & mask) << shift
             
         }
         
-        return permuted
+        // move to right in case we're not filling the whole bitWidth
+        return permuted >> (workingBits.bitWidth - vector.count)
     }
     
     /**
@@ -181,22 +188,22 @@ public class SDESCore {
          split into C and D, like:
          MSb                   LSb
          +-----------+-----------+
-         |     d     |     c     |
+         |     c     |     d     |
          +-----------+-----------+
          */
-        var c: UInt16 = (pc1 & 0b0000000000011111)
-        var d: UInt16 = (pc1 & 0b0000001111100000) >> 5
+        var c: UInt16 = (pc1 & 0b0000001111100000) >> 5
+        var d: UInt16 = (pc1 & 0b0000000000011111)
         var keys: [UInt8] = []
         
         // for each round, do the corresponding number of rotate left operations
         for i in 0..<ROUNDS {
             
             // rotate left for current round
-            c = c.rotatedLeft(by: ROTATIONS[i]) & 0b0000000000011111
-            d = d.rotatedLeft(by: ROTATIONS[i]) & 0b0000000000011111
+            c = c.rotatedLeft(by: ROTATIONS[i], forBitsUpTo: 5)
+            d = d.rotatedLeft(by: ROTATIONS[i], forBitsUpTo: 5)
             
             // combine the key and add it to the array of keys in the schedule
-            let temp = permute((d << 5) | c, by: PC[1])
+            let temp = permute((c << 5) | d, by: PC[1])
             keys.append(UInt8(truncatingIfNeeded: temp))
             
         }
@@ -218,19 +225,19 @@ public class SDESCore {
      */
     func f(_ r: UInt8, _ key: UInt8) -> UInt8 {
         
-        // expand R bits using E vector, XOR w/ key, after masking out upper 4 bits
-        let expanded = permute(r & 0x0F, by: E) ^ key
+        // expand nibble of R bits using E vector, then XOR with key
+        let expanded = permute(r << 4, by: E) ^ key
         
-        // split into two halves (b1 is least significant nibble)
-        let b1 = (expanded & 0x0F)
-        let b2 = (expanded & 0xF0) >> 4
+        // split into two halves (b1 is most significant nibble)
+        let b1 = (expanded & 0xF0) >> 4
+        let b2 = (expanded & 0x0F)
         
         // get substitutions
         let s1 = substitute(nibble: b1, using: S[0])
         let s2 = substitute(nibble: b2, using: S[1])
         
         // combine the substitution results (s2 becomes most significant 2 bits)
-        let permuted: UInt8 = permute((s2 << 2) | s1, by: P) & 0x0F
+        let permuted = permute((s1 << 2) | s2, by: P) & 0x0F
         
         return permuted
     }
@@ -253,7 +260,7 @@ public class SDESCore {
         let i: UInt8 = ((nibble & 0b00001000) >> 2) | (nibble & 0b00000001)
         let j: UInt8 = (nibble & 0b00000110) >> 1
         
-        return (box[Int(i)][Int(j)] & 0x03)
+        return (box[Int(i)][Int(j)] & 0b00000011)
     }
     
 }

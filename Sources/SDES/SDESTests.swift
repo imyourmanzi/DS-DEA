@@ -14,7 +14,8 @@ public class SDESTests {
     
     public func runTests() {
         setUp()
-//        testRotatedLeft()
+        testRotatedLeft()
+        testPermute()
         varibalePlaintextKnownAnswerTest()
         tearDown()
     }
@@ -41,6 +42,32 @@ public class SDESTests {
         print("testRotatedLeft 0 by 3 for 5: \(rotated == 0b0000000000000000)")
     }
     
+    func testPermute() {
+        var original: UInt8 = 0b10011010
+        var permutation: [UInt8] = [1, 2, 3, 4, 5, 6, 7, 8]
+        var permuted = core.permute(original, by: permutation)
+        var answer = original
+        print("testPermute 0b\(String(original, radix: 2)) == 0b\(String(permuted, radix: 2)): \(permuted == answer)")
+        
+        original = 0b10011010
+        permutation = [1, 4, 5, 7, 2, 3, 6, 8]
+        permuted = core.permute(original, by: permutation)
+        answer = 0b11110000
+        print("testPermute 0b\(String(original, radix: 2)) => 0b\(String(permuted, radix: 2)) == 0b\(String(answer, radix: 2)): \(permuted == answer)")
+        
+        original = 0b00000010
+        permutation = [2, 3, 1]
+        permuted = core.permute(original, by: permutation)
+        answer = 0b00000100
+        print("testPermute 0b\(String(original, radix: 2)) => 0b\(String(permuted, radix: 2)) == 0b\(String(answer, radix: 2)): \(permuted == answer)")
+        
+        original = 0b00001001
+        permutation = [4, 1, 2, 3, 2, 3, 4, 1]
+        permuted = core.permute(original << 4, by: permutation)
+        answer = 0b11000011
+        print("testPermute 0b\(String(original, radix: 2)) => 0b\(String(permuted, radix: 2)) == 0b\(String(answer, radix: 2)): \(permuted == answer)")
+    }
+    
     func varibalePlaintextKnownAnswerTest() {
         let answers = [
             0b10101000,
@@ -56,9 +83,9 @@ public class SDESTests {
         let key: UInt16 = 0b0000000000000000
         var p: UInt8 = 0b10000000
         
-        for i in 1...8 {
+        for i in 0..<answers.count {
             let out = core.encrypt(p, with: key)
-            print("varibalePlaintextKnownAnswerTest \(i): \(out == answers[i - 1])")
+            print("varibalePlaintextKnownAnswerTest \(i): \(out == answers[i])")
             p = p >> 1
         }
         
