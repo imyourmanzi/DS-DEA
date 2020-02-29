@@ -141,6 +141,7 @@ public class SDESCore {
      
      - Parameter bits: The bits to be permuted.
      - Parameter vector: The permutation vector that describes how to permute the bits.
+     - Parameter sigBits: The number of bits that are significant in the input `bits`.
      
      - Precondition: `vector` must not contain more elements than `bits.bitWidth`.  It describes the ordering of each bit where the first element indicates which bit will be placed in the position of most significant bit (MSb), the second bit number is the bit number to be moved into the second-MSb position, and so on.  Bits are numbered `1...bits.bitWidth`.
      
@@ -148,10 +149,16 @@ public class SDESCore {
      
      - Postcondition: The effective bit width of the return value will be equivalent to `vector.count`.
      */
-    func permute<T>(_ bits: T, by vector: [T]) -> T where T: UnsignedInteger {
+    func permute<T>(_ bits: T, by vector: [T],
+                    usingBits sigBits: Int = -1) -> T where T: UnsignedInteger {
         
+        var significantBits = sigBits
+        if sigBits < 0 {
+            significantBits = vector.count
+        }
+            
         // shift the bits so that 1 is in the MSb position of T
-        let workingBits = bits << (bits.bitWidth - vector.count)
+        let workingBits = bits << (bits.bitWidth - significantBits)
         
         // isolate each bit and move it to it's permutated position
         var permuted: T = 0
@@ -181,7 +188,7 @@ public class SDESCore {
      */
     func scheduleKeys(from key: UInt16) -> [UInt8] {
         
-        // calculate permuted choice 1, first masking out the upper 6 bits
+        // calculate permuted choice 1, anded with key mask
         let pc1 = permute(key & KEY_MASK, by: PC[0])
         
         /*
@@ -203,8 +210,10 @@ public class SDESCore {
             d = d.rotatedLeft(by: ROTATIONS[i], forBitsUpTo: 5)
             
             // combine the key and add it to the array of keys in the schedule
-            let temp = permute((c << 5) | d, by: PC[1])
-            keys.append(UInt8(truncatingIfNeeded: temp))
+            let combined: UInt16 = (c << 5) | d
+            let permuted: UInt16 = permute(combined, by: PC[1], usingBits: 10)
+            let trunked: UInt8 = UInt8(truncatingIfNeeded: permuted)
+            keys.append(trunked)
             
         }
         
