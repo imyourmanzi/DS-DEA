@@ -17,6 +17,8 @@ public class SDESTests {
         testRotatedLeft()
         testPermute()
         varibalePlaintextKnownAnswerTest()
+        inversePermutationKnownAnswerTest()
+        variableKeyKnownAnswerTest()
         tearDown()
     }
 
@@ -69,7 +71,32 @@ public class SDESTests {
     }
     
     func varibalePlaintextKnownAnswerTest() {
-        let answers = [
+        let answers: [UInt8] = [
+            0b10101000,
+            0b10111110,
+            0b00010110,
+            0b01001010,
+            0b01001001,
+            0b01001110,
+            0b00010101,
+            0b01101000
+        ]
+        let key: UInt16 = 0b0000000000000000
+        // for basis vectors
+        var p: UInt8 = 0b10000000
+        
+        for i in 0..<answers.count {
+            let out = core.encrypt(p, with: key)
+            print("varibalePlaintextKnownAnswerTest \(i): \(out == answers[i])")
+            p = p >> 1
+        }
+        
+    }
+    
+    func inversePermutationKnownAnswerTest() {
+        var answer: UInt8 = 0b10000000
+        let key: UInt16 = 0b0000000000000000
+        let p: [UInt8] = [
             0b10101000,
             0b10111110,
             0b00010110,
@@ -80,13 +107,33 @@ public class SDESTests {
             0b01101000
         ]
         
-        let key: UInt16 = 0b0000000000000000
-        var p: UInt8 = 0b10000000
+        for i in 0..<p.count {
+            let out = core.encrypt(p[i], with: key)
+            print("inversePermutationKnownAnswerTest \(i): \(out == answer)")
+            answer = answer >> 1
+        }
+    }
+    
+    func variableKeyKnownAnswerTest() {
+        let answers: [UInt8] = [
+            0b01100001,
+            0b00010011,
+            0b01001111,
+            0b11100101,
+            0b01100101,
+            0b01011100,
+            0b10101110,
+            0b11011001,
+            0b10101010,
+            0b01001110
+        ]
+        var key: UInt16 = 0b0000001000000000
+        let p: UInt8 = 0b00000000
         
         for i in 0..<answers.count {
             let out = core.encrypt(p, with: key)
-            print("varibalePlaintextKnownAnswerTest \(i): \(out == answers[i])")
-            p = p >> 1
+            print("variableKeyKnownAnswerTest \(i): \(out == answers[i])")
+            key = key >> 1
         }
         
     }
