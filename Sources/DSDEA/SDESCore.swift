@@ -59,17 +59,19 @@ let P: [UInt8] = [2, 4, 3, 1]
 // MARK: - S-DES Core Functionality
 
 /// An implementation of the S-DES algorithm for single blocks of 8-bits.
-public class SDESCore {
+class SDESCore {
     
     /**
      Encrypts an 8-bit block of data using the provided key.
+     
+     This encryption is ECB mode and works soley on 8-bit-long blocks of data.
      
      - Parameter block: The block to encrypt.
      - Parameter key: The key to encrypt the block with.
      
      - Returns: The `key`-encrypted version of `block`.
      */
-    public func encrypt(_ block: UInt8, with key: UInt16) -> UInt8 {
+    func encrypt(_ block: UInt8, with key: UInt16) -> UInt8 {
         
         // generate schedule of keys
         let keySchedule = scheduleKeys(from: key)
@@ -82,13 +84,15 @@ public class SDESCore {
     
     /**
     Decrypts an 8-bit block of data using the provided key.
+     
+    This decryption is ECB mode and works soley on 8-bit-long blocks of data.
     
     - Parameter block: The block to decrypt.
     - Parameter key: The key to decrypt the block with.
     
     - Returns: The `key`-decrypted version of `block`.
     */
-    public func decrypt(_ block: UInt8, with key: UInt16) -> UInt8 {
+    func decrypt(_ block: UInt8, with key: UInt16) -> UInt8 {
         
         // generate schedule of keys
         let reversedKeySchedule: [UInt8] = scheduleKeys(from: key).reversed()
