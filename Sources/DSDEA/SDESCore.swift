@@ -1,7 +1,7 @@
 //
-//  SDES.swift
-//  Houses all the core functionality of the Simplified Data Encryption Standard
-//  (S-DES).
+//  SDESCore.swift
+//  Houses all the core implementation of the Simplified Data Encryption
+//  Standard (S-DES).
 //
 //  Created by Matt Manzi on 2/25/20.
 //  Project 2 of CMSC 487, Spring 2020.
@@ -56,7 +56,7 @@ let S: [[[UInt8]]] = [
 let P: [UInt8] = [2, 4, 3, 1]
 
 
-// MARK: - SDES Core Functionality
+// MARK: - S-DES Core Functionality
 
 /// An implementation of the S-DES algorithm for single blocks of 8-bits.
 public class SDESCore {

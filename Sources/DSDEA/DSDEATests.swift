@@ -1,5 +1,5 @@
 //
-//  SDESTests.swift
+//  DSDEATests.swift
 //  Poor-boi's testing here because Swift's unit test machine BROKE.
 //
 //  Created by Matt Manzi on 2/27/20.
@@ -8,8 +8,8 @@
 
 import Foundation
 
-/// A set of tests to verify the encrypt and decrypt operations of the (D)S-DES implementation.
-final class SDESTests {
+/// A set of tests to verify the encrypt and decrypt operations of the DS-DEA implementation.
+final class DSDEATests {
 
     /// An instance of the core SDES functionality class.
     private var core: SDESCore!

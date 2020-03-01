@@ -12,7 +12,7 @@ final class SampleTests: XCTestCase {
             return
         }
 
-        let fooBinary = productsDirectory.appendingPathComponent("s-des")
+        let fooBinary = productsDirectory.appendingPathComponent("DSDEA")
 
         let process = Process()
         process.executableURL = fooBinary
