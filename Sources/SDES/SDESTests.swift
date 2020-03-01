@@ -12,6 +12,9 @@ public class SDESTests {
 
     private var core: SDESCore!
     
+    
+    // MARK: - Tester Methods
+    
     public func runTests() {
         setUp()
         testRotatedLeft()
@@ -19,6 +22,8 @@ public class SDESTests {
         varibalePlaintextKnownAnswerTest()
         inversePermutationKnownAnswerTest()
         variableKeyKnownAnswerTest()
+        permutationOperationKnownAnswerTest()
+        substitutionTableKnownAnswerTest()
         tearDown()
     }
 
@@ -29,6 +34,9 @@ public class SDESTests {
     func tearDown() {
         core = nil
     }
+    
+    
+    // MARK: - Utility Tests
     
     func testRotatedLeft() {
         var original: UInt16 = 0b0000000000011111
@@ -69,6 +77,9 @@ public class SDESTests {
         answer = 0b11000011
         print("testPermute 0b\(String(original, radix: 2)) => 0b\(String(permuted, radix: 2)) == 0b\(String(answer, radix: 2)): \(permuted == answer)")
     }
+    
+    
+    // MARK: - Encryption Tests
     
     func varibalePlaintextKnownAnswerTest() {
         let answers: [UInt8] = [
@@ -138,4 +149,77 @@ public class SDESTests {
         
     }
 
+    func permutationOperationKnownAnswerTest() {
+        let answers: [UInt8] = [
+            0b00000011,
+            0b00100010,
+            0b01000000,
+            0b01100000
+        ]
+        let keys: [UInt16] = [
+            0b0000000011,
+            0b0011001010,
+            0b0001011001,
+            0b1011001111
+        ]
+        let p: UInt8 = 0b00000000
+        
+        for i in 0..<answers.count {
+            let out = core.encrypt(p, with: keys[i])
+            print("permutationOperationKnownAnswerTest \(i): \(out == answers[i])")
+        }
+        
+    }
+    
+    func substitutionTableKnownAnswerTest() {
+        let answers: [UInt8] = [
+            0b10000111,
+            0b10110110,
+            0b10110100,
+            0b00110011,
+            0b11011001,
+            0b10001101,
+            0b00010001
+        ]
+        let keys: [UInt16] = [
+            0b0001101101,
+            0b0001101110,
+            0b0001110000,
+            0b0001110001,
+            0b0001110110,
+            0b0001111000,
+            0b0001111001
+        ]
+        let p: UInt8 = 0b00000000
+        
+        for i in 0..<answers.count {
+            let out = core.encrypt(p, with: keys[i])
+            print("substitutionTableKnownAnswerTest \(i): \(out == answers[i])")
+        }
+        
+    }
+    
+    
+    // MARK: - Decryption Tests
+    
+    func variableCiphertextKnownAnswerTest() {
+        
+    }
+    
+    func initialPermutationKnownAnswerTest() {
+        
+    }
+    
+    func variableKeyKnownAnswerTestDecryption() {
+        
+    }
+    
+    func permutationOperationKnownAnswerTestDecryption() {
+        
+    }
+    
+    func substitutionTableKnownAnswerTestDecryption() {
+        
+    }
+    
 }
