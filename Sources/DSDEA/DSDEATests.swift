@@ -18,14 +18,28 @@ final class DSDEATests {
     // MARK: - Tester Methods
     
     public func runTests() {
+        print("\nMARK: - Utility Tests")
         setUp()
         testRotatedLeft()
         testPermute()
+        tearDown()
+        
+        print("\nMARK: - Encryption Tests")
+        setUp()
         varibalePlaintextKnownAnswerTest()
         inversePermutationKnownAnswerTest()
         variableKeyKnownAnswerTest()
         permutationOperationKnownAnswerTest()
         substitutionTableKnownAnswerTest()
+        tearDown()
+        
+        print("\nMARK: - Decryption Tests")
+        setUp()
+        variableCiphertextKnownAnswerTest()
+        initialPermutationKnownAnswerTest()
+        variableKeyKnownAnswerTestDecryption()
+        permutationOperationKnownAnswerTestDecryption()
+        substitutionTableKnownAnswerTestDecryption()
         tearDown()
     }
 
@@ -265,6 +279,15 @@ final class DSDEATests {
      As the basis vectors are recovered via the decrypt operation, they are presented to the inverse permutation IP-1, thus verifying it. This test also verifies the initial permutation IP and the expansion matrix E via the encrypt operation by presenting a full set of basis vectors to these components.
      */
     func variableCiphertextKnownAnswerTest() {
+        let key: UInt16 = 0b0000000000000000
+        var p: UInt8 = 0b10000000
+        
+        for i in 0..<8 {
+            let c = core.encrypt(p, with: key)
+            let out = core.decrypt(c, with: key)
+            print("variableCiphertextKnownAnswerTest \(i): \(out == p)")
+            p = p >> 1
+        }
         
     }
     
@@ -280,6 +303,24 @@ final class DSDEATests {
      This test, when applied to an IUT, verifies that the initial permutation IP and the expansion matrix E via the decrypt operation, by presenting the full set of basisi vectors to the components. Via the encrypt operation, this test also verifies the inverse permutation (IP-1) as the basis vectors are recovered by presenting each basis vector to the inverse permutation IP-1.
      */
     func initialPermutationKnownAnswerTest() {
+        let answers: [UInt8] = [
+            0b10101000,
+            0b10111110,
+            0b00010110,
+            0b01001010,
+            0b01001001,
+            0b01001110,
+            0b00010101,
+            0b01101000
+        ]
+        let key: UInt16 = 0b0000000000000000
+        var p: UInt8 = 0b10000000
+        
+        for i in 0..<answers.count {
+            let out = core.decrypt(p, with: key)
+            print("initialPermutationKnownAnswerTest \(i): \(out == answers[i])")
+            p = p >> 1
+        }
         
     }
   
@@ -297,6 +338,15 @@ final class DSDEATests {
      During the encrypt operation, a complete set of basis vectors is presented to the key permutation, PC1, thus verifying PC1. Since the key schedule consists of left shifts, a complete set of basis vectors is also presented to PC2 verifying PC2 as well.
      */
     func variableKeyKnownAnswerTestDecryption() {
+        var key: UInt16 = 0b0000001000000000
+        let p: UInt8 = 0b00000000
+        
+        for i in 1..<10 {
+            let c = core.encrypt(p, with: key)
+            let out = core.decrypt(c, with: key)
+            print("variableKeyKnownAnswerTestDecryption \(i): \(out == p)")
+            key = key >> 1
+        }
         
     }
   
@@ -310,6 +360,19 @@ final class DSDEATests {
      The 4 key sets used in this test present a complete set of basis vectors to the permutation operator P. By doing so, P is verified. This occurs when both the encrypt and decrypt operations are performed.
      */
     func permutationOperationKnownAnswerTestDecryption() {
+        let keys: [UInt16] = [
+            0b0000000011,
+            0b0011001010,
+            0b0001011001,
+            0b1011001111
+        ]
+        let p: UInt8 = 0b00000000
+        
+        for i in 0..<keys.count {
+            let c = core.encrypt(p, with: keys[i])
+            let out = core.decrypt(c, with: keys[i])
+            print("permutationOperationKnownAnswerTestDecryption: \(i): \(out == p)")
+        }
         
     }
   
@@ -323,6 +386,22 @@ final class DSDEATests {
      The set of 7 key-data sets used in this test result in every entry of both S-box substitution tables being used at least once during both the encrypt and decrypt operations. Thus, this test verifies the 64 entries in each of the eight substitution tables.
      */
     func substitutionTableKnownAnswerTestDecryption() {
+        let keys: [UInt16] = [
+            0b0001101101,
+            0b0001101110,
+            0b0001110000,
+            0b0001110001,
+            0b0001110110,
+            0b0001111000,
+            0b0001111001
+        ]
+        let p: UInt8 = 0b00000000
+        
+        for i in 0..<keys.count {
+            let c = core.encrypt(p, with: keys[i])
+            let out = core.decrypt(c, with: keys[i])
+            print("substitutionTableKnownAnswerTestDecryption \(i): \(out == p)")
+        }
         
     }
     
