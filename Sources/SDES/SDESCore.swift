@@ -58,12 +58,18 @@ let P: [UInt8] = [2, 4, 3, 1]
 
 // MARK: - SDES Core Functionality
 
+/// An implementation of the S-DES algorithm for single blocks of 8-bits.
 public class SDESCore {
     
     /**
-     TODO: comment
+     Encrypts an 8-bit block of data using the provided key.
+     
+     - Parameter block: The block to encrypt.
+     - Parameter key: The key to encrypt the block with.
+     
+     - Returns: The `key`-encrypted version of `block`.
      */
-    func encrypt(_ block: UInt8, with key: UInt16) -> UInt8 {
+    public func encrypt(_ block: UInt8, with key: UInt16) -> UInt8 {
         
         // generate schedule of keys
         let keySchedule = scheduleKeys(from: key)
@@ -75,9 +81,14 @@ public class SDESCore {
     }
     
     /**
-     TODO: comment
-     */
-    func decrypt(_ block: UInt8, with key: UInt16) -> UInt8 {
+    Decrypts an 8-bit block of data using the provided key.
+    
+    - Parameter block: The block to decrypt.
+    - Parameter key: The key to decrypt the block with.
+    
+    - Returns: The `key`-decrypted version of `block`.
+    */
+    public func decrypt(_ block: UInt8, with key: UInt16) -> UInt8 {
         
         // generate schedule of keys
         let reversedKeySchedule: [UInt8] = scheduleKeys(from: key).reversed()
@@ -144,10 +155,9 @@ public class SDESCore {
      - Parameter sigBits: The number of bits that are significant in the input `bits`.
      
      - Precondition: `vector` must not contain more elements than `bits.bitWidth`.  It describes the ordering of each bit where the first element indicates which bit will be placed in the position of most significant bit (MSb), the second bit number is the bit number to be moved into the second-MSb position, and so on.  Bits are numbered `1...bits.bitWidth`.
+     - Postcondition: The effective bit width of the return value will be equivalent to `vector.count`.
      
      - Returns: The bits of `bits` in the permuted order.
-     
-     - Postcondition: The effective bit width of the return value will be equivalent to `vector.count`.
      */
     func permute<T>(_ bits: T, by vector: [T],
                     usingBits sigBits: Int = -1) -> T where T: UnsignedInteger {
@@ -227,10 +237,9 @@ public class SDESCore {
      - Parameter key: The key to encipher with.
      
      - Precondition: The expected `r` will have 8 bits, however the most significant 4 bits will be ignored.
+     - Postcondition: The return value will have 8 bits, however only the least significant 4 bits will used.
      
      - Returns: The enciphered block of four bits.
-     
-     - Postcondition: The return value will have 8 bits, however only the least significant 4 bits will used.
      */
     func f(_ r: UInt8, _ key: UInt8) -> UInt8 {
         
@@ -258,10 +267,9 @@ public class SDESCore {
      - Parameter box: The substitution box to use.
      
      - Precondition: The expected `nibble` will have 8 bits, however the most significant 4 bits will be ignored.
+     - Postcondition: The return value will have 8 bits, however only the least significant 2 bits will used.
      
      - Returns: The 2-bit result of the substitution.
-     
-     - Postcondition: The return value will have 8 bits, however only the least significant 2 bits will used.
      */
     func substitute(nibble: UInt8, using box: [[UInt8]]) -> UInt8 {
         
