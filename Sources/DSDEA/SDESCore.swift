@@ -64,14 +64,14 @@ class SDESCore {
     /**
      Encrypts an 8-bit block of data using the provided key.
      
-     This encryption is ECB mode and works soley on 8-bit-long blocks of data.
+     This encryption is ECB mode and works solely on 8-bit-long blocks of data.
      
      - Parameter block: The block to encrypt.
      - Parameter key: The key to encrypt the block with.
      
      - Returns: The `key`-encrypted version of `block`.
      */
-    func encrypt(_ block: UInt8, with key: UInt16) -> UInt8 {
+    public func encrypt(_ block: UInt8, with key: UInt16) -> UInt8 {
         
         // generate schedule of keys
         let keySchedule = scheduleKeys(from: key)
@@ -85,14 +85,14 @@ class SDESCore {
     /**
     Decrypts an 8-bit block of data using the provided key.
      
-    This decryption is ECB mode and works soley on 8-bit-long blocks of data.
+    This decryption is ECB mode and works solely on 8-bit-long blocks of data.
     
     - Parameter block: The block to decrypt.
     - Parameter key: The key to decrypt the block with.
     
     - Returns: The `key`-decrypted version of `block`.
     */
-    func decrypt(_ block: UInt8, with key: UInt16) -> UInt8 {
+    public func decrypt(_ block: UInt8, with key: UInt16) -> UInt8 {
         
         // generate schedule of keys
         let reversedKeySchedule: [UInt8] = scheduleKeys(from: key).reversed()
@@ -106,10 +106,10 @@ class SDESCore {
     /**
      Enciphers an 8-bit block using a key schedule array of keys.  Note that this function also deciphers enciphered blocks when given the ciphertext and the same, but reversed, key schedule array.
      
+     - Precondition: This function expects `keys` was  generated with the `scheduleKeys()` function.
+     
      - Parameter block: The 8-bit block to encipher.
      - Parameter keys: An array of cipher keys.
-     
-     - Precondition: This function expects `keys` was  generated with the `scheduleKeys()` function.
      
      - Returns: The 8-bit, enciphered permutation of `block`.
      */
@@ -154,12 +154,12 @@ class SDESCore {
     /**
      Permutes (rearranges) bits of `UnsignedInteger` types through the use of a permutation vector.
      
+     - Precondition: `vector` must not contain more elements than `bits.bitWidth`.  It describes the ordering of each bit where the first element indicates which bit will be placed in the position of most significant bit (MSb), the second bit number is the bit number to be moved into the second-MSb position, and so on.  Bits are numbered `1...bits.bitWidth`.
+     - Postcondition: The effective bit width of the return value will be equivalent to `vector.count`.
+     
      - Parameter bits: The bits to be permuted.
      - Parameter vector: The permutation vector that describes how to permute the bits.
      - Parameter sigBits: The number of bits that are significant in the input `bits`.
-     
-     - Precondition: `vector` must not contain more elements than `bits.bitWidth`.  It describes the ordering of each bit where the first element indicates which bit will be placed in the position of most significant bit (MSb), the second bit number is the bit number to be moved into the second-MSb position, and so on.  Bits are numbered `1...bits.bitWidth`.
-     - Postcondition: The effective bit width of the return value will be equivalent to `vector.count`.
      
      - Returns: The bits of `bits` in the permuted order.
      */
@@ -194,9 +194,9 @@ class SDESCore {
     /**
      Generates the schedule of keys to use with enciphering a block.
      
-     - Parameter key: The 10-bit key which will be used to generate the schedule of keys.
-     
      - Precondition: The expected `key` will have 16 bits, however the most significant 6 bits will be ignored.
+     
+     - Parameter key: The 10-bit key which will be used to generate the schedule of keys.
      
      - Returns: The schedule of keys: an array of four 8-bit keys.
      */
@@ -237,11 +237,11 @@ class SDESCore {
     /**
      Performs the core ciphering function of S-DES.
      
-     - Parameter r: The (right-half) block of four bits.
-     - Parameter key: The key to encipher with.
-     
      - Precondition: The expected `r` will have 8 bits, however the most significant 4 bits will be ignored.
      - Postcondition: The return value will have 8 bits, however only the least significant 4 bits will used.
+     
+     - Parameter r: The (right-half) block of four bits.
+     - Parameter key: The key to encipher with.
      
      - Returns: The enciphered block of four bits.
      */
@@ -267,11 +267,11 @@ class SDESCore {
     /**
      Substitutes four bits for a corresponding combination of two bits based on a substitution box.
      
-     - Parameter nibble: The four bits to input to the substitution box.
-     - Parameter box: The substitution box to use.
-     
      - Precondition: The expected `nibble` will have 8 bits, however the most significant 4 bits will be ignored.
      - Postcondition: The return value will have 8 bits, however only the least significant 2 bits will used.
+     
+     - Parameter nibble: The four bits to input to the substitution box.
+     - Parameter box: The substitution box to use.
      
      - Returns: The 2-bit result of the substitution.
      */
@@ -294,10 +294,10 @@ extension UInt16 {
     /**
      Circularly rotates bits of the number left by a desired amount.
      
+     - Precondition: Providing `maxPlaces` with a value larger than the `bitWidth` will be ignored and rotate all of the bits.
+     
      - Parameter shift: The number of single left-rotations to perform.
      - Parameter maxPlace: The number of bits (starting from the least significant bit) to rotate.  This number can only be as large as the `bitWidth` of the number.  For example, `3` would rotate the subset of bits representing 1, 2, and 4.
-     
-     - Precondition: Providing `maxPlaces` with a value larger than the `bitWidth` will be ignored and rotate all of the bits.
      
      - Returns: The original number after its rotation.
      */
