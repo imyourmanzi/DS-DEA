@@ -19,36 +19,32 @@ final class DSDEATests {
     
     public func runTests() {
         print("\nMARK: - Utility Tests")
-        setUp()
+        core = SDESCore()
         testRotatedLeft()
         testPermute()
-        tearDown()
+        core = nil
         
         print("\nMARK: - Encryption Tests")
-        setUp()
+        core = SDESCore()
         varibalePlaintextKnownAnswerTest()
         inversePermutationKnownAnswerTest()
         variableKeyKnownAnswerTest()
         permutationOperationKnownAnswerTest()
         substitutionTableKnownAnswerTest()
-        tearDown()
+        core = nil
         
         print("\nMARK: - Decryption Tests")
-        setUp()
+        core = SDESCore()
         variableCiphertextKnownAnswerTest()
         initialPermutationKnownAnswerTest()
         variableKeyKnownAnswerTestDecryption()
         permutationOperationKnownAnswerTestDecryption()
         substitutionTableKnownAnswerTestDecryption()
-        tearDown()
-    }
-
-    func setUp() {
-        core = SDESCore()
-    }
-    
-    func tearDown() {
         core = nil
+        
+        print("\nMARK: - DS-DEA Tests")
+        testEncryptDecryptOneBlock()
+        testEncryptDecryptManyBlocks()
     }
     
     
@@ -403,6 +399,29 @@ final class DSDEATests {
             print("substitutionTableKnownAnswerTestDecryption \(i): \(out == p)")
         }
         
+    }
+    
+    
+    // MARK: - DS-DEA Tests
+    
+    func testEncryptDecryptOneBlock() {
+        let p: [UInt8] = [0x2B]
+        let keys: [UInt16] = [0b1010100101, 0b1100111011]
+        
+        let c = DSDEA.encrypt(p, with: keys)
+        let out = DSDEA.decrypt(c, with: keys)
+        
+        print("testEncryptDecryptOneBlock: \(out == p)")
+    }
+    
+    func testEncryptDecryptManyBlocks() {
+        let p: [UInt8] = [0x2B, 0xDE, 0xAD, 0x69, 0x42, 0x0F, 0xAA, 0xE5]
+        let keys: [UInt16] = [0b1010100101, 0b1100111011]
+        
+        let c = DSDEA.encrypt(p, with: keys)
+        let out = DSDEA.decrypt(c, with: keys)
+        
+        print("testEncryptDecryptManyBlocks: \(out == p)")
     }
     
 }
