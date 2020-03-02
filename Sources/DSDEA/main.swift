@@ -6,6 +6,9 @@
 //  Project 2 of CMSC 487, Spring 2020.
 //
 
+
+// MARK: - Constants
+
 /// A few plaintext and corresponding ciphertext pairs from ECB mode encryption (i.e. core only).
 let knownPairs: [[UInt8]] = [
     [0x42, 0x52],
@@ -17,17 +20,6 @@ let knownPairs: [[UInt8]] = [
 
 let keyMin: UInt16 = 0b0000000000
 let keyMax: UInt16 = 0b1111111111
-
-func main() {
-
-    // testing
-    let tester = DSDEATests()
-    tester.runTests()
-    
-//    meetInTheMiddle()
-    
-//    bruteForce()
-}
 
 
 // MARK: - Meet in the Middle Attack
@@ -118,6 +110,70 @@ func bruteForce() -> [UInt16] {
     }
     
     return []
+}
+
+
+// MARK: - Main Execution
+
+func main() {
+    let options = ["test", "mitm", "brute", "decrypt"]
+    
+    if CommandLine.arguments.count < 2 {
+        print("Usage: ./\(CommandLine.arguments[0]) \(options.joined(separator: "|"))")
+        return
+    }
+    
+    switch CommandLine.arguments[1] {
+        
+    case options[0]:
+        let tester = DSDEATests()
+        tester.runTests()
+        
+    case options[1]:
+        let keys = meetInTheMiddle()
+        print("Key 1: 0b\(String(keys[0], radix: 2))")
+        print("Key 2: 0b\(String(keys[1], radix: 2))")
+        
+    case options[2]:
+        let keys = bruteForce()
+        print("Key 1: 0b\(String(keys[0], radix: 2))")
+        print("Key 2: 0b\(String(keys[1], radix: 2))")
+        
+    case options[3]:
+        print("Enter your message in hexadecimal characters: ", terminator: "")
+        guard let msg = readLine(strippingNewline: true)?.lowercased() else {
+            print("Did not read any input!")
+            return
+        }
+        
+        // convert string to data
+        var msgData: [UInt8] = []
+        for c in 0..<(msg.count - 1) {
+            let start = msg.index(msg.startIndex, offsetBy: c)
+            let end = msg.index(msg.startIndex, offsetBy: c + 1)
+            let byteStr = msg[start...end]
+            
+            if let byte = UInt8(byteStr, radix: 16) {
+                msgData.append(byte)
+            } else {
+                print("Invalid hexadecimal byte: \(byteStr)!")
+                return
+            }
+            
+        }
+        
+        // decrypt with found keys
+        let keys = meetInTheMiddle()
+        let out = DSDEA.decrypt(msgData, with: keys)
+        for o in out {
+            print(String(format: "%c", o), terminator: "")
+        }
+        print()
+        
+    default:
+        print("Usage: ./\(CommandLine.arguments[0]) \(options.joined(separator: "|"))")
+    }
+    
 }
 
 main()
