@@ -72,7 +72,7 @@ func meetInTheMiddle() -> [UInt16] {
         k2Pairs = []
     }
     
-    return []
+    return [0, 0]
 }
 
 
@@ -109,7 +109,7 @@ func bruteForce() -> [UInt16] {
         
     }
     
-    return []
+    return [0, 0]
 }
 
 
@@ -148,7 +148,8 @@ func main() {
         
         // convert string to data
         var msgData: [UInt8] = []
-        for c in 0..<(msg.count - 1) {
+        var c = 0
+        while c < (msg.count - 1) {
             let start = msg.index(msg.startIndex, offsetBy: c)
             let end = msg.index(msg.startIndex, offsetBy: c + 1)
             let byteStr = msg[start...end]
@@ -160,11 +161,13 @@ func main() {
                 return
             }
             
+            c += 2
         }
         
         // decrypt with found keys
         let keys = meetInTheMiddle()
         let out = DSDEA.decrypt(msgData, with: keys)
+        print("Decrypted message is below:")
         for o in out {
             print(String(format: "%c", o), terminator: "")
         }
