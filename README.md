@@ -25,6 +25,7 @@ swift run DSDEA test|mitm|brute|decrypt
 The keys found for the provided plaintext/ciphertext pairs are:
 * Key 1: `0b1100111111`
 * Key 2: `0b0101010011`
+
 or in hexadecimal:
 * Key 1: `0x33F`
 * Key 2: `0x153`
