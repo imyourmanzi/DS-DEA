@@ -18,22 +18,29 @@ let knownPairs: [[UInt8]] = [
     [0x65, 0x8a]
 ]
 
-let keyMin: UInt16 = 0b0000000000
+/// The largest possible key value.
 let keyMax: UInt16 = 0b1111111111
 
 
 // MARK: - Meet in the Middle Attack
 
+/**
+ Performs a meet-in-the-middle attack with the known plaintext/ciphertext pairs to determine the pair of keys.
+ 
+ - Postcondition: If a working combination of keys are not found, the keys `[0, 0]` will be returned.
+ 
+ - Returns: An array of 2 keys.
+ */
 func meetInTheMiddle() -> [UInt16] {
     let core = SDESCore()
     var k1Pairs = [UInt16: [UInt8]]()
     var out: UInt8 = 0x00
 
     
-    // encrypt halfway
+    // encrypt halfway...
     
     // generate each of the plaintexts' keys
-    for k1 in keyMin...keyMax {
+    for k1 in 0...keyMax {
         
         // generate for each of the known pairs
         for pair in knownPairs {
@@ -48,13 +55,13 @@ func meetInTheMiddle() -> [UInt16] {
     }
     
     
-    // meet from back
+    // meet from the back...
     
     out = 0x00
     var k2Pairs: [UInt8] = []
     
     // find the corresponding second key
-    for k2 in keyMin...keyMax {
+    for k2 in 0...keyMax {
         
         // generate all pairs
         for pair in knownPairs {
@@ -78,13 +85,20 @@ func meetInTheMiddle() -> [UInt16] {
 
 // MARK: - Brute Force Attack
 
+/**
+Performs a brute force attack with the known plaintext/ciphertext pairs to determine the pair of keys.
+
+- Postcondition: If a working combination of keys are not found, the keys `[0, 0]` will be returned.
+
+- Returns: An array of 2 keys.
+*/
 func bruteForce() -> [UInt16] {
     let core = SDESCore()
     var out: UInt8 = 0x00
     
-    for k1 in keyMin...keyMax {
+    for k1 in 0...keyMax {
         
-        for k2 in keyMin...keyMax {
+        for k2 in 0...keyMax {
             
             // test each known pair
             for pair in knownPairs {
@@ -117,13 +131,16 @@ func bruteForce() -> [UInt16] {
 
 func main() {
     let options = ["test", "mitm", "brute", "decrypt"]
+    let args = CommandLine.arguments
     
-    if CommandLine.arguments.count < 2 {
-        print("Usage: ./\(CommandLine.arguments[0]) \(options.joined(separator: "|"))")
+    // exit early without an arg
+    if args.count < 2 {
+        print("Usage: ./\(args[0]) \(options.joined(separator: "|"))")
         return
     }
     
-    switch CommandLine.arguments[1] {
+    // handle each command
+    switch args[1] {
         
     case options[0]:
         let tester = DSDEATests()
@@ -174,7 +191,7 @@ func main() {
         print()
         
     default:
-        print("Usage: ./\(CommandLine.arguments[0]) \(options.joined(separator: "|"))")
+        print("Usage: ./\(args[0]) \(options.joined(separator: "|"))")
     }
     
 }
