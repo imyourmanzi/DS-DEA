@@ -1,5 +1,4 @@
 # DS-DEA
-_Matt Manzi_  
 
 An implementation of the Simplified Data Encryption Standard (S-DES) and Double Simplified Data Encryption Algorithm (DS-DEA).
 
