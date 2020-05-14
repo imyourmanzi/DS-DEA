@@ -1,13 +1,9 @@
 # DS-DEA
 _Matt Manzi_  
-_Project 2 of CMSC 487, Spring 2020._
 
 An implementation of the Simplified Data Encryption Standard (S-DES) and Double Simplified Data Encryption Algorithm (DS-DEA).
 
-This implementation includes code to run meet-in-the-middle and brute force attacks on the hardcoded set of plaintext/ciphertext pairs listed below:
-```
-0x42/0x52, 0x72/0xf0, 0x75/0xbe, 0x74/0x69, 0x65/0x8a
-```
+This implementation includes code to run meet-in-the-middle and brute force attacks on a hardcoded set of plaintext/ciphertext pairs listed in the following section.
 
 ## Installation and Usage
 
@@ -18,7 +14,13 @@ Once installed, enter the top-level project directory.  Run the code with the fo
 swift run DSDEA test|mitm|brute|decrypt
 ```
 
-## Project Answers
+## Attack Tests
+
+The following plaintext/ciphertext pairs listed below correspond to a key pair combination:
+```
+0x42/0x52, 0x72/0xf0, 0x75/0xbe, 0x74/0x69, 0x65/0x8a
+```
+The keys can be determined using the provided code.  See below for expected results.
 
 ### Found Keys
 
@@ -33,19 +35,6 @@ or in hexadecimal:
 Below are the time for one run of each of meet-in-the-middle and brute force attacks:
 * MITM: **1.176 seconds**
 * Brute Force: **3:30.07 minutes**
-
-<img src="times.png" alt="The time elapsed for a single meet-in-the-middle and brute force attack, respectively." />
-
-### Decrypted Message
-
-The given ciphertext:
-```
-0x586519b031aaee9a235247601fb37baefbcd54d8c3763f8523d2a1315ed8bdcc
-```
-decrypted with the keys found above will produce the (UTF-8-enocded) plaintext:
-```
-Congratulations on your success!
-```
 
 ### Weak Keys
 
