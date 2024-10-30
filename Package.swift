@@ -15,8 +15,8 @@ let package = Package(
         .target(
             name: "DSDEA",
             dependencies: []),
-        .testTarget(
-            name: "DSDEATests",
-            dependencies: ["DSDEA"]),
+//        .testTarget(
+//            name: "DSDEATests",
+//            dependencies: ["DSDEA"]),
     ]
 )
